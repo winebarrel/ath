@@ -1,0 +1,90 @@
+#!/usr/bin/env ruby
+$LOAD_PATH << File.expand_path('../../lib', __FILE__)
+
+require 'logger'
+require 'optparse'
+require 'ath'
+
+Version = Ath::VERSION
+
+options = {
+  database: 'default',
+  output_location: ENV['ATH_OUTPUT_LOCATION'],
+  debug: false,
+}
+
+query = nil
+query_file = nil
+
+ARGV.options do |opt|
+  aws_opts = {}
+  creds_opts = {}
+
+  begin
+    opt.on('-p', '--profile PROFILE_NAME')  {|v| creds_opts[:profile_name]    = v    }
+    opt.on(''  , '--credentials-path PATH') {|v| creds_opts[:path]            = v    }
+    opt.on('-k', '--access-key ACCESS_KEY') {|v| aws_opts[:access_key]        = v    }
+    opt.on('-s', '--secret-key SECRET_KEY') {|v| aws_opts[:secret_access_key] = v    }
+    opt.on('-r', '--region REGION')         {|v| aws_opts[:region]            = v    }
+    opt.on(''  , '--output-location S3URI') {|v| options[:output_location]    = v    }
+    opt.on('-d', '--database DATABASE')     {|v| options[:database]           = v    }
+    opt.on('-e', '--execute QUERY')         {|v| query                        = v    }
+    opt.on('-f', '--file QUERY_FILR')       {|v| query_file                   = v    }
+    opt.on(''  , '--debug')                 {    options[:debug]              = true }
+    opt.parse!
+
+    unless options[:output_location]
+      raise Ath::Error, '"--output-location" or ATH_OUTPUT_LOCATION is required'
+    end
+
+    if not creds_opts.empty?
+      creds = Aws::SharedCredentials.new(credentials_opts)
+      aws_opts[:credentials] = creds
+    end
+
+    Aws.config.update(aws_opts)
+  rescue Ath::Error, OptionParser::ParseError => e
+    $stderr.puts("[ERROR] #{e.message}")
+    exit 1
+  rescue => e
+    $stderr.puts("[ERROR] #{e.message}")
+    puts "\t" + e.backtrace.join("\n\t")
+    exit 1
+  end
+end
+
+if options[:debug]
+  Aws.config.update(
+    http_wire_trace: true,
+    logger: Logger.new($stdout).tap {|l| l.level = Logger::DEBUG },
+  )
+end
+
+begin
+  shell = Ath::Shell.new(database: options.delete(:database), options: options)
+
+  if query_file
+    if query_file == '-'
+      query = $stdin.read
+    else
+      query = File.read(query_file)
+    end
+  end
+
+  if query
+    query.strip!
+    query << ';' if query !~ /[;&]\z/
+    shell.oneshot(query)
+  else
+    shell.start
+  end
+rescue Interrupt
+  # nothing to do
+rescue => e
+  if options[:debug]
+    raise e
+  else
+    $stderr.puts("[ERROR] #{[e.message, e.backtrace.first].join("\n\t")}")
+    exit 1
+  end
+end
