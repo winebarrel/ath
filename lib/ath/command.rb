@@ -15,7 +15,7 @@ class Ath::Command
       if @arg == 'true' or @arg == 'false'
         @shell.options[:debug] = (@arg =~ /true/)
       else
-        out = "Usage: /debug true|false"
+        out = !!@shell.options.fetch(:debug)
       end
     when 'desc'
       if @arg
