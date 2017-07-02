@@ -20,7 +20,7 @@ class Ath::Shell
     while line = Readline.readline(prompt, true)
       execute_query(line)
     end
-
+  ensure
     save_history
   end
 
@@ -71,7 +71,7 @@ class Ath::Shell
   end
 
   def print_result(out)
-    return unless out
+    return if out.nil?
 
     if out.kind_of?(File)
       begin
