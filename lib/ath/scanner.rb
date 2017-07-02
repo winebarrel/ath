@@ -17,7 +17,9 @@ class Ath::Scanner
     until ss.eos?
       @buf << ' '
 
-      if (tok = ss.scan %r{[^'";&]+})
+      if (tok = ss.scan %r{[^'"`;&]+})
+        @buf << tok
+      elsif (tok = ss.scan /`(?:`|[^`])*`/)
         @buf << tok
       elsif (tok = ss.scan /'(?:''|[^'])*'/)
         @buf << tok
