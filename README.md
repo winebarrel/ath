@@ -118,7 +118,7 @@ $ echo 'select count(*) from elb_logs' | ath -d sampledb -f -
 "1356206"
 
 $ echo 'select count(*) from elb_logs' > count.sql
-$| ath -d sampledb -f count.sql
+$ ath -d sampledb -f count.sql
 "_col0"
 "1356206"
 ```
