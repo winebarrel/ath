@@ -112,15 +112,15 @@ class Ath::Shell
   end
 
   def save_history
-    if Readline::HISTORY.length < HISTSIZE
-      offset = Readline::HISTORY.length
+    history = Readline::HISTORY.map(&:strip).reject(&:empty?).reverse.uniq.reverse
+
+    if history.length < HISTSIZE
+      offset = history.length
     else
-      offset = HISTORY
+      offset = HISTSIZE
     end
 
-    history = Readline::HISTORY.map(&:strip).reject(&:empty?).uniq
     history = history.slice(-offset..-1) || []
-
     return if history.empty?
 
     open(HISTORY_FILE, 'wb') do |f|
