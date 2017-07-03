@@ -84,6 +84,7 @@ Usage: ath [options]
     -d, --database DATABASE
     -e, --execute QUERY
     -f, --file QUERY_FILR
+        --[no-]progress
         --debug
 ```
 

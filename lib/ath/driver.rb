@@ -18,17 +18,33 @@ class Ath::Driver
   end
 
   def get_query_execution_result(query_execution_id:)
-    query_execution = @athena.get_query_execution(query_execution_id: query_execution_id).query_execution
-    output_location = query_execution.result_configuration.output_location
-    bucket, key = output_location.sub(%r{\As3://}, '').split('/', 2)
+    bucket, key = get_query_execution_result_output_location(query_execution_id: query_execution_id)
     tmp = Tempfile.create('ath')
 
-    @s3.get_object(bucket: bucket, key: key) do |chunk|
-      tmp.write(chunk)
+    if block_given?
+      @s3.get_object(bucket: bucket, key: key) do |chunk|
+        yield(chunk)
+        tmp.write(chunk)
+      end
+    else
+      @s3.get_object(bucket: bucket, key: key) do |chunk|
+        tmp.write(chunk)
+      end
     end
 
     tmp.flush
     tmp
+  end
+
+  def head_query_execution_result(query_execution_id:)
+    bucket, key = get_query_execution_result_output_location(query_execution_id: query_execution_id)
+    @s3.head_object(bucket: bucket, key: key)
+  end
+
+  def get_query_execution_result_output_location(query_execution_id:)
+    query_execution = @athena.get_query_execution(query_execution_id: query_execution_id).query_execution
+    output_location = query_execution.result_configuration.output_location
+    output_location.sub(%r{\As3://}, '').split('/', 2)
   end
 
   def start_query_execution(query_string:)

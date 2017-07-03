@@ -15,8 +15,13 @@ class Ath::Query
     abort_waiting = false
     orig_handler = trap(:INT, proc { abort_waiting = true })
     query_execution = nil
+    running_progressbar = nil
 
     begin
+      if @shell.options[:progress]
+        running_progressbar = ProgressBar.create(title: 'Running', total: nil, output: $stderr)
+      end
+
       until abort_waiting
         query_execution = @shell.driver.get_query_execution(query_execution_id: query_execution_id)
 
@@ -24,9 +29,11 @@ class Ath::Query
           break
         end
 
+        running_progressbar.increment if running_progressbar
         sleep 1
       end
     ensure
+      running_progressbar.clear if running_progressbar
       trap(:INT, orig_handler)
     end
 
@@ -35,7 +42,27 @@ class Ath::Query
     end
 
     if query_execution.status.state == 'SUCCEEDED'
-      @shell.driver.get_query_execution_result(query_execution_id: query_execution_id)
+      head = @shell.driver.head_query_execution_result(query_execution_id: query_execution_id)
+      download_progressbar = nil
+
+      begin
+        if @shell.options[:progress]
+          download_progressbar = ProgressBar.create(
+            title: 'Download',
+            total: head.content_length,
+            output: $stderr)
+        end
+
+        @shell.driver.get_query_execution_result(query_execution_id: query_execution_id) do |chunk|
+          begin
+            download_progressbar.progress += chunk.length if download_progressbar
+          rescue ProgressBar::InvalidProgressError
+            # nothing to do
+          end
+        end
+      ensure
+        download_progressbar.clear if download_progressbar
+      end
     else
       "QueryExecution #{query_execution_id}: #{query_execution.status.state_change_reason}"
     end
