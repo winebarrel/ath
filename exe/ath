@@ -10,6 +10,7 @@ Version = Ath::VERSION
 options = {
   database: 'default',
   output_location: ENV['ATH_OUTPUT_LOCATION'],
+  pager: ENV['ATH_PAGER'],
   debug: false,
 }
 
@@ -30,6 +31,7 @@ ARGV.options do |opt|
     opt.on('-d', '--database DATABASE')     {|v| options[:database]           = v    }
     opt.on('-e', '--execute QUERY')         {|v| query                        = v    }
     opt.on('-f', '--file QUERY_FILR')       {|v| query_file                   = v    }
+    opt.on('',   '--pager PAGER')           {|v| options[:pager]              = v    }
     opt.on('',   '--[no-]progress')         {|v| options[:progress]           = v    }
     opt.on(''  , '--debug')                 {    options[:debug]              = true }
     opt.parse!
@@ -65,6 +67,7 @@ begin
   shell = Ath::Shell.new(
     output_location: options.delete(:output_location),
     database: options.delete(:database),
+    pager: options.delete(:pager),
     options: options)
 
   if query_file

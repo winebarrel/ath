@@ -22,6 +22,7 @@ Or install it yourself as:
 
 ```
 $ export ATH_OUTPUT_LOCATION=s3://my-bucket
+$ #export ATH_PAGER='column -t -s,'
 
 $ ath
 
