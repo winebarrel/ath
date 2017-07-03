@@ -1,11 +1,12 @@
 class Ath::Driver
   attr_accessor :database
 
-  def initialize(athena:, s3:, output_location:, database:)
+  def initialize(athena:, s3:, output_location:, database:, options: {})
     @athena = athena
     @s3 = s3
     @output_location = output_location
     @database = database
+    @options = options
   end
 
   def get_query_execution(query_execution_id:)
@@ -18,13 +19,27 @@ class Ath::Driver
   end
 
   def get_query_execution_result(query_execution_id:)
-    bucket, key = get_query_execution_result_output_location(query_execution_id: query_execution_id)
+    query_execution = @athena.get_query_execution(query_execution_id: query_execution_id).query_execution
+    output_location = query_execution.result_configuration.output_location
+    bucket, key = output_location.sub(%r{\As3://}, '').split('/', 2)
     tmp = Tempfile.create('ath')
 
-    if block_given?
-      @s3.get_object(bucket: bucket, key: key) do |chunk|
-        yield(chunk)
-        tmp.write(chunk)
+    if @options[:progress]
+      head = @s3.head_object(bucket: bucket, key: key)
+      download_progressbar = ProgressBar.create(title: 'Download', total: head.content_length, output: $stderr)
+
+      begin
+        @s3.get_object(bucket: bucket, key: key) do |chunk|
+          tmp.write(chunk)
+
+          begin
+            download_progressbar.progress += chunk.length
+          rescue ProgressBar::InvalidProgressError
+            # nothing to do
+          end
+        end
+      ensure
+        download_progressbar.clear
       end
     else
       @s3.get_object(bucket: bucket, key: key) do |chunk|
@@ -34,17 +49,6 @@ class Ath::Driver
 
     tmp.flush
     tmp
-  end
-
-  def head_query_execution_result(query_execution_id:)
-    bucket, key = get_query_execution_result_output_location(query_execution_id: query_execution_id)
-    @s3.head_object(bucket: bucket, key: key)
-  end
-
-  def get_query_execution_result_output_location(query_execution_id:)
-    query_execution = @athena.get_query_execution(query_execution_id: query_execution_id).query_execution
-    output_location = query_execution.result_configuration.output_location
-    output_location.sub(%r{\As3://}, '').split('/', 2)
   end
 
   def start_query_execution(query_string:)
