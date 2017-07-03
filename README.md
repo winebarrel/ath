@@ -110,7 +110,7 @@ default> /save cf881630-a845-424a-8035-afe155505cac
 Save to /Users/.../cf881630-a845-424a-8035-afe155505cac.csv
 ```
 
-### Input Query From File
+### Input Query from File
 
 ```sh
 $ echo 'select count(*) from elb_logs' | ath -d sampledb -f -
