@@ -35,7 +35,7 @@ class Ath::Driver
     @athena.start_query_execution(
       query_string: query_string,
       query_execution_context: {database: @database},
-      result_configuration: { output_location: @output_location})
+      result_configuration: {output_location: @output_location})
   end
 
   def stop_query_execution(query_execution_id:)
