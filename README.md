@@ -2,6 +2,8 @@
 
 ath is a interactive [Amazon Athena](https://aws.amazon.com/athena/) shell.
 
+[![Gem Version](https://badge.fury.io/rb/ath.svg)](https://badge.fury.io/rb/ath)
+
 [![asciicast](https://asciinema.org/a/127476.png)](https://asciinema.org/a/127476)
 
 ## Installation
