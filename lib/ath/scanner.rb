@@ -8,7 +8,7 @@ class Ath::Scanner
     ss = StringScanner.new(line)
 
     if self.empty? and (tok = ss.scan %r{/\w+(?:\s+.*)?\z})
-      cmd, arg = tok.split(/\s+/, 2)
+      cmd, arg = tok.strip.split(/\s+/, 2)
       cmd.slice!(0)
       arg.strip! if arg
       yield(Ath::Command.new(shell: @shell, command: cmd, arg: arg))

@@ -98,6 +98,7 @@ default> /help
 /pager PAGER
 /region [REGION]
 /result QUERY_EXECUTION_ID
+/save QUERY_EXECUTION_ID [PATH]
 /stop QUERY_EXECUTION_ID
 /use DATABASE
 ```
