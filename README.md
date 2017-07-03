@@ -2,6 +2,8 @@
 
 ath is a interactive [Amazon Athena](https://aws.amazon.com/athena/) shell.
 
+[![asciicast](https://asciinema.org/a/127476.png)](https://asciinema.org/a/127476)
+
 ## Installation
 
 Add this line to your application's Gemfile:
