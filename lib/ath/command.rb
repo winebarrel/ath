@@ -51,12 +51,24 @@ class Ath::Command
       end
 
       out = lines.join("\n")
+    when 'output_location'
+      if @arg
+        @shell.driver.output_location = @arg
+      else
+        out = @shell.driver.output_location
+      end
     when 'pager'
       if @arg
         @shell.pager = @arg
       else
         @shell.pager = nil
         out = "Using stdout"
+      end
+    when 'region'
+      if @arg
+        @shell.driver.region = @arg
+      else
+        out = @shell.driver.region
       end
     when 'result'
       if @arg
@@ -72,7 +84,7 @@ class Ath::Command
       end
     when 'use'
       if @arg
-        @shell.database = @arg
+        @shell.driver.database = @arg
       else
         out = "Usage: /use DATABASE"
       end
@@ -91,7 +103,9 @@ class Ath::Command
 /desc QUERY_EXECUTION_ID
 /help
 /list [NUM]
+/output_location [S3URL]
 /pager PAGER
+/region [REGION]
 /result QUERY_EXECUTION_ID
 /stop QUERY_EXECUTION_ID
 /use DATABASE

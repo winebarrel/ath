@@ -4,13 +4,11 @@ class Ath::Shell
 
   attr_reader :driver
   attr_reader :options
-  attr_accessor :database
   attr_accessor :pager
 
-  def initialize(athena: Aws::Athena::Client.new, s3: Aws::S3::Client.new, database: nil, options: {})
-    @driver = Ath::Driver.new(athena: athena, s3: s3)
+  def initialize(athena: Aws::Athena::Client.new, s3: Aws::S3::Client.new, output_location:, database: nil, options: {})
+    @driver = Ath::Driver.new(athena: athena, s3: s3, output_location: output_location, database: database)
     @options = options
-    @database = database
     @scanner = Ath::Scanner.new(shell: self)
   end
 
@@ -60,7 +58,7 @@ class Ath::Shell
   end
 
   def prompt
-    database = @database || '(none)'
+    database = @driver.database || '(none)'
 
     if @scanner.empty?
       "#{database}> "

@@ -1,11 +1,14 @@
 class Ath::Driver
-  def initialize(athena:, s3:)
+  attr_accessor :database
+
+  def initialize(athena:, s3:, output_location:, database:)
     @athena = athena
     @s3 = s3
+    @output_location = output_location
+    @database = database
   end
 
   def get_query_execution(query_execution_id:)
-
     @athena.get_query_execution(query_execution_id: query_execution_id).query_execution
   end
 
@@ -28,15 +31,32 @@ class Ath::Driver
     tmp
   end
 
-  def start_query_execution(query_string:, database:, output_location:)
+  def start_query_execution(query_string:)
     @athena.start_query_execution(
       query_string: query_string,
-      query_execution_context: {database: database},
-      result_configuration: { output_location: output_location}
-    )
+      query_execution_context: {database: @database},
+      result_configuration: { output_location: @output_location})
   end
 
   def stop_query_execution(query_execution_id:)
     @athena.stop_query_execution(query_execution_id: query_execution_id)
+  end
+
+  def output_location
+    @output_location
+  end
+
+  def output_location=(v)
+    @output_location = v
+  end
+
+  def region
+    @athena.config.region
+  end
+
+  def region=(v)
+    @athena.config.region = v
+    @athena.config.sigv4_region = v
+    @athena.config.endpoint = Aws::EndpointProvider.resolve(v, 'athena')
   end
 end
