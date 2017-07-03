@@ -10,7 +10,6 @@ Version = Ath::VERSION
 options = {
   database: 'default',
   output_location: ENV['ATH_OUTPUT_LOCATION'],
-  progress: true,
   debug: false,
 }
 
@@ -77,10 +76,12 @@ begin
   end
 
   if query
+    options[:progress] = false unless options.has_key?(:progress)
     query.strip!
     query << ';' if query !~ /[;&]\z/
     shell.oneshot(query)
   else
+    options[:progress] = true unless options.has_key?(:progress)
     shell.start
   end
 rescue Interrupt
