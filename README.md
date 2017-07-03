@@ -2,6 +2,8 @@
 
 ath is a interactive [Amazon Athena](https://aws.amazon.com/athena/) shell.
 
+[![asciicast](https://asciinema.org/a/127476.png)](https://asciinema.org/a/127476)
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -20,7 +22,10 @@ Or install it yourself as:
 
 ## Getting Started
 
-```
+```sh
+$ export AWS_ACCESS_KEY_ID=...
+$ export AWS_SECRET_ACCESS_KEY=...
+$ export AWS_REGION=ap-northeast-1
 $ export ATH_OUTPUT_LOCATION=s3://my-bucket
 $ #export ATH_PAGER='column -t -s,'
 
@@ -91,7 +96,7 @@ default> /save cf881630-a845-424a-8035-afe155505cac
 Save to /Users/.../cf881630-a845-424a-8035-afe155505cac.csv
 ```
 
-```
+```sh
 $ echo 'select count(*) from elb_logs' | ath -d sampledb -f -
 "_col0"
 "1356206"
@@ -111,6 +116,7 @@ Usage: ath [options]
     -d, --database DATABASE
     -e, --execute QUERY
     -f, --file QUERY_FILE
+        --pager PAGER
         --[no-]progress
         --debug
 ```
