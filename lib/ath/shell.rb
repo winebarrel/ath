@@ -74,16 +74,16 @@ class Ath::Shell
 
     if out.kind_of?(File)
       begin
+        begin
+          out.seek(-1, IO::SEEK_END)
+          append_nl(out) if out.gets !~ /\n\z/
+        rescue Errno::EINVAL
+          append_nl(out)
+        end
+
         cmd = "cat #{out.path}"
         cmd << " | #{@pager}" if @pager
         system(cmd)
-
-        begin
-          out.seek(-1, IO::SEEK_END)
-          puts if out.gets !~ /\n\z/
-        rescue Errno::EINVAL
-          puts
-        end
       ensure
         out.close
       end
@@ -125,5 +125,10 @@ class Ath::Shell
     open(HISTORY_FILE, 'wb') do |f|
       history.each {|l| f.puts l }
     end
+  end
+
+  def append_nl(file)
+    file.puts
+    file.flush
   end
 end
