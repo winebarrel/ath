@@ -3,6 +3,7 @@ require 'strscan'
 require 'tempfile'
 
 require 'aws-sdk'
+require 'ruby-progressbar'
 
 require 'ath/version'
 require 'ath/command'
