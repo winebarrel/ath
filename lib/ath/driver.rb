@@ -23,9 +23,9 @@ class Ath::Driver
     output_location = query_execution.result_configuration.output_location
     bucket, key = output_location.sub(%r{\As3://}, '').split('/', 2)
     tmp = Tempfile.create('ath')
+    head = @s3.head_object(bucket: bucket, key: key)
 
-    if @options[:progress]
-      head = @s3.head_object(bucket: bucket, key: key)
+    if @options[:progress] and head.content_length >= 1024 ** 2
       download_progressbar = ProgressBar.create(title: 'Download', total: head.content_length, output: $stderr)
 
       begin
