@@ -19,7 +19,7 @@ class Ath::Scanner
 
       if (tok = ss.scan %r{[^'"`;&]+})
         @buf << tok
-      elsif (tok = ss.scan /`(?:`|[^`])*`/)
+      elsif (tok = ss.scan /`(?:``|[^`])*`/)
         @buf << tok
       elsif (tok = ss.scan /'(?:''|[^'])*'/)
         @buf << tok
