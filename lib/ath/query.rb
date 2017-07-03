@@ -42,27 +42,7 @@ class Ath::Query
     end
 
     if query_execution.status.state == 'SUCCEEDED'
-      head = @shell.driver.head_query_execution_result(query_execution_id: query_execution_id)
-      download_progressbar = nil
-
-      begin
-        if @shell.options[:progress]
-          download_progressbar = ProgressBar.create(
-            title: 'Download',
-            total: head.content_length,
-            output: $stderr)
-        end
-
-        @shell.driver.get_query_execution_result(query_execution_id: query_execution_id) do |chunk|
-          begin
-            download_progressbar.progress += chunk.length if download_progressbar
-          rescue ProgressBar::InvalidProgressError
-            # nothing to do
-          end
-        end
-      ensure
-        download_progressbar.clear if download_progressbar
-      end
+      @shell.driver.get_query_execution_result(query_execution_id: query_execution_id)
     else
       "QueryExecution #{query_execution_id}: #{query_execution.status.state_change_reason}"
     end

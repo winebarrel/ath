@@ -7,7 +7,7 @@ class Ath::Shell
   attr_accessor :pager
 
   def initialize(athena: Aws::Athena::Client.new, s3: Aws::S3::Client.new, output_location:, database: nil, options: {})
-    @driver = Ath::Driver.new(athena: athena, s3: s3, output_location: output_location, database: database)
+    @driver = Ath::Driver.new(athena: athena, s3: s3, output_location: output_location, database: database, options: options)
     @options = options
     @scanner = Ath::Scanner.new(shell: self)
   end
