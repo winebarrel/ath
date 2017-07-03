@@ -31,6 +31,7 @@ class Ath::Scanner
         raise Ath::Error, 'No query specified' if query.empty?
         yield(Ath::Query.new(shell: @shell, query: query, detach: (tok == '&')))
       else
+        @buf.clear
         raise Ath::Error, 'You have an error in your HiveQL syntax'
       end
     end
