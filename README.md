@@ -90,6 +90,12 @@ default> /save cf881630-a845-424a-8035-afe155505cac
 Save to /Users/.../cf881630-a845-424a-8035-afe155505cac.csv
 ```
 
+```
+$ echo 'select count(*) from elb_logs' | ath -d sampledb -f -
+"_col0"
+"1356206"
+```
+
 ## Usage
 
 ```
