@@ -110,7 +110,7 @@ Usage: ath [options]
         --output-location S3URI
     -d, --database DATABASE
     -e, --execute QUERY
-    -f, --file QUERY_FILR
+    -f, --file QUERY_FILE
         --[no-]progress
         --debug
 ```

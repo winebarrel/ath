@@ -30,7 +30,7 @@ ARGV.options do |opt|
     opt.on(''  , '--output-location S3URI') {|v| options[:output_location]    = v    }
     opt.on('-d', '--database DATABASE')     {|v| options[:database]           = v    }
     opt.on('-e', '--execute QUERY')         {|v| query                        = v    }
-    opt.on('-f', '--file QUERY_FILR')       {|v| query_file                   = v    }
+    opt.on('-f', '--file QUERY_FILE')       {|v| query_file                   = v    }
     opt.on('',   '--pager PAGER')           {|v| options[:pager]              = v    }
     opt.on('',   '--[no-]progress')         {|v| options[:progress]           = v    }
     opt.on(''  , '--debug')                 {    options[:debug]              = true }
