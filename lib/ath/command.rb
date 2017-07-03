@@ -76,6 +76,15 @@ class Ath::Command
       else
         out = "Usage: /result QUERY_EXECUTION_ID"
       end
+    when 'save'
+      if @arg
+        query_execution_id, path = @arg.split(/\s+/, 2)
+        path ||= Dir.pwd
+        path = @shell.driver.save_query_execution_result(query_execution_id: query_execution_id, path: path)
+        out = "Save to #{path}"
+      else
+        out = "Usage: /result QUERY_EXECUTION_ID [PATH]"
+      end
     when 'stop'
       if @arg
         @shell.driver.stop_query_execution(query_execution_id: @arg)
@@ -107,6 +116,7 @@ class Ath::Command
 /pager PAGER
 /region [REGION]
 /result QUERY_EXECUTION_ID
+/save QUERY_EXECUTION_ID [PATH]
 /stop QUERY_EXECUTION_ID
 /use DATABASE
     EOS

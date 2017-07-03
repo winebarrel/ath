@@ -19,10 +19,26 @@ class Ath::Driver
   end
 
   def get_query_execution_result(query_execution_id:)
-    query_execution = @athena.get_query_execution(query_execution_id: query_execution_id).query_execution
-    output_location = query_execution.result_configuration.output_location
-    bucket, key = output_location.sub(%r{\As3://}, '').split('/', 2)
     tmp = Tempfile.create('ath')
+    bucket, key = get_query_execution_result_output_location(query_execution_id: query_execution_id)
+    download_query_execution_result(bucket: bucket, key: key, file: tmp)
+  end
+
+  def save_query_execution_result(query_execution_id:, path:)
+    bucket, key = get_query_execution_result_output_location(query_execution_id: query_execution_id)
+
+    if File.directory?(path)
+      path = File.join(path, File.basename(key))
+    end
+
+    open(path, 'wb') do |file|
+      download_query_execution_result(bucket: bucket, key: key, file: file)
+    end
+
+    path
+  end
+
+  def download_query_execution_result(bucket:, key:, file:)
     head = @s3.head_object(bucket: bucket, key: key)
 
     if @options[:progress] and head.content_length >= 1024 ** 2
@@ -30,7 +46,7 @@ class Ath::Driver
 
       begin
         @s3.get_object(bucket: bucket, key: key) do |chunk|
-          tmp.write(chunk)
+          file.write(chunk)
 
           begin
             download_progressbar.progress += chunk.length
@@ -43,12 +59,18 @@ class Ath::Driver
       end
     else
       @s3.get_object(bucket: bucket, key: key) do |chunk|
-        tmp.write(chunk)
+        file.write(chunk)
       end
     end
 
-    tmp.flush
-    tmp
+    file.flush
+    file
+  end
+
+  def get_query_execution_result_output_location(query_execution_id:)
+    query_execution = @athena.get_query_execution(query_execution_id: query_execution_id).query_execution
+    output_location = query_execution.result_configuration.output_location
+    output_location.sub(%r{\As3://}, '').split('/', 2)
   end
 
   def start_query_execution(query_string:)
