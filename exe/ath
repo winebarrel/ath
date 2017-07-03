@@ -61,7 +61,10 @@ if options[:debug]
 end
 
 begin
-  shell = Ath::Shell.new(database: options.delete(:database), options: options)
+  shell = Ath::Shell.new(
+    output_location: options.delete(:output_location),
+    database: options.delete(:database),
+    options: options)
 
   if query_file
     if query_file == '-'

@@ -93,7 +93,9 @@ default> /help
 /desc QUERY_EXECUTION_ID
 /help
 /list [NUM]
+/output_location [S3URL]
 /pager PAGER
+/region [REGION]
 /result QUERY_EXECUTION_ID
 /stop QUERY_EXECUTION_ID
 /use DATABASE

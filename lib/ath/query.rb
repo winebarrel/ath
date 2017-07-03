@@ -6,11 +6,7 @@ class Ath::Query
   end
 
   def run
-    query_execution_id = @shell.driver.start_query_execution(
-      query_string: @query,
-      database: @shell.database,
-      output_location: @shell.options.fetch(:output_location)
-    ).query_execution_id
+    query_execution_id = @shell.driver.start_query_execution(query_string: @query).query_execution_id
 
     if @detach
       return "QueryExecution #{query_execution_id}"
