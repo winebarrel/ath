@@ -69,8 +69,8 @@ sampledb> /result 2335c77b-d138-4c5d-89df-12f2781c311b
 "2015-01-01T16:00:00.902953Z","elb_demo_005","246.233.91.115","1950","172.42.232.155","8888","9.59E-4","0.001703","8.93E-4","200","200","0","3027","GET","http://www.example.com/jobs/509","HTTP/1.1","""Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Safari/602.1.50""","-","-"
 "2015-01-01T16:00:01.206255Z","elb_demo_002","250.96.73.238","12800","172.34.87.144","80","0.001549","9.68E-4","0.001908","200","200","0","888","GET","http://www.example.com/articles/729","HTTP/1.1","""Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246""","-","-"
 
-default> /use sampledb
 sampledb> /pager column -t -s,
+
 sampledb> select elb_name, count(*) from elb_logs group by elb_name;
 "elb_name"      "_col1"
 "elb_demo_006"  "151901"
@@ -85,6 +85,7 @@ sampledb> select elb_name, count(*) from elb_logs group by elb_name;
 
 sampledb> /list 1
 2017-07-03 20:52:24 +0900 cf881630-a845-424a-8035-afe155505cac SUCCEEDED select elb_name   cou..
+
 default> /save cf881630-a845-424a-8035-afe155505cac
 Save to /Users/.../cf881630-a845-424a-8035-afe155505cac.csv
 ```
