@@ -60,6 +60,8 @@ class Ath::CLI
       )
     end
 
+    options[:output_location] = ERB.new(options[:output_location]).result
+
     return [options, query, query_file]
   end
 

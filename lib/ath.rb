@@ -1,3 +1,4 @@
+require 'erb'
 require 'logger'
 require 'optparse'
 require 'readline'
