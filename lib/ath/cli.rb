@@ -60,7 +60,12 @@ class Ath::CLI
       )
     end
 
-    options[:output_location] = ERB.new(options[:output_location]).result
+    begin
+      options[:output_location] = ERB.new(options[:output_location]).result
+    rescue => e
+      $stderr.puts("[ERROR] Eval output-location failed: #{e.message}")
+      exit 1
+    end
 
     return [options, query, query_file]
   end
@@ -68,37 +73,39 @@ class Ath::CLI
   def main
     options, query, query_file = parse_options
 
-    shell = Ath::Shell.new(
-      output_location: options.delete(:output_location),
-      database: options.delete(:database),
-      pager: options.delete(:pager),
-      options: options)
+    begin
+      shell = Ath::Shell.new(
+        output_location: options.delete(:output_location),
+        database: options.delete(:database),
+        pager: options.delete(:pager),
+        options: options)
 
-    if query_file
-      if query_file == '-'
-        query = $stdin.read
-      else
-        query = File.read(query_file)
+      if query_file
+        if query_file == '-'
+          query = $stdin.read
+        else
+          query = File.read(query_file)
+        end
       end
-    end
 
-    if query
-      options[:progress] = false unless options.has_key?(:progress)
-      query.strip!
-      query << ';' if query !~ /[;&]\z/
-      shell.oneshot(query)
-    else
-      options[:progress] = true unless options.has_key?(:progress)
-      shell.start
-    end
-  rescue Interrupt
-    # nothing to do
-  rescue => e
-    if options[:debug]
-      raise e
-    else
-      $stderr.puts("[ERROR] #{[e.message, e.backtrace.first].join("\n\t")}")
-      exit 1
+      if query
+        options[:progress] = false unless options.has_key?(:progress)
+        query.strip!
+        query << ';' if query !~ /[;&]\z/
+        shell.oneshot(query)
+      else
+        options[:progress] = true unless options.has_key?(:progress)
+        shell.start
+      end
+    rescue Interrupt
+      # nothing to do
+    rescue => e
+      if options[:debug]
+        raise e
+      else
+        $stderr.puts("[ERROR] #{[e.message, e.backtrace.first].join("\n\t")}")
+        exit 1
+      end
     end
   end
 end
