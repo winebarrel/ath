@@ -1,3 +1,5 @@
+require 'logger'
+require 'optparse'
 require 'readline'
 require 'strscan'
 require 'tempfile'
@@ -6,6 +8,7 @@ require 'aws-sdk'
 require 'ruby-progressbar'
 
 require 'ath/version'
+require 'ath/cli'
 require 'ath/command'
 require 'ath/driver'
 require 'ath/error'
