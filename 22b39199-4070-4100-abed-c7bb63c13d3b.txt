@@ -1,2 +1,0 @@
-elb_logs
-elb_logs2
